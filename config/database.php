@@ -7,8 +7,8 @@ use PDOException;
 class Database {
     private static $host = 'localhost';
     private static $db_name = 'product_category_val';
-    private static $username = 'root';
-    private static $password = '';
+    private static $username = 'suzxlabs';
+    private static $password = 'Susara@200611003614';
     private static $conn = null;
 
     public static function getConnection() {
