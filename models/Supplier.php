@@ -183,7 +183,7 @@ class Supplier {
      * @return array
      */
     public function getProductsBySupplier($supplier_name) {
-        $sql = "SELECT id, product_code, product_name, current_category, price, supplier 
+        $sql = "SELECT id, product_code, product_name, current_category, selling_price, supplier 
                 FROM products WHERE supplier = :supplier ORDER BY product_name ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':supplier' => $supplier_name]);

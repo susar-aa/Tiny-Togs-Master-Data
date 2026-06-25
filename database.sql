@@ -27,14 +27,17 @@ CREATE TABLE IF NOT EXISTS `category_keywords` (
 -- Table: products
 CREATE TABLE IF NOT EXISTS `products` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `code` VARCHAR(100) NULL,
   `product_code` VARCHAR(100) NOT NULL,
   `product_name` VARCHAR(255) NOT NULL,
   `current_category` VARCHAR(255) NOT NULL,
-  `price` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+  `cost_price` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+  `selling_price` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
   `supplier` VARCHAR(255) NULL,
   `other_fields_json` JSON NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `idx_product_code` (`product_code`),
+  INDEX `idx_code` (`code`),
   INDEX `idx_current_category` (`current_category`),
   INDEX `idx_product_name` (`product_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -96,10 +99,11 @@ INSERT INTO `category_keywords` (`category_id`, `keyword`) VALUES
 ON DUPLICATE KEY UPDATE `keyword` = VALUES(`keyword`);
 
 -- Insert Sample Products
-INSERT INTO `products` (`id`, `product_code`, `product_name`, `current_category`, `price`, `supplier`, `other_fields_json`) VALUES
-(1, 'P001', 'Luxury Baby Pillow', 'Toys & Games', 15.99, 'Baby Sleep Corp', '{"color": "blue", "material": "cotton"}'),
-(2, 'P002', 'Wooden Building Blocks Set', 'Toys & Games', 24.50, 'ToyLand Ltd', '{"pieces": 50}'),
-(3, 'P003', 'Organic Cotton Romper', 'Baby Clothing', 12.99, 'TinyTreads', '{"size": "6M"}'),
-(4, 'P004', 'Baby Towel Set', 'Baby Bedding Sets & Pillows', 18.00, 'SoftTouch', '{"pack": 3}'),
-(5, 'P005', 'Anti-Colic Feeding Bottle', 'Bath & Skin Care', 9.50, 'NurturePro', '{"capacity": "250ml"}')
+INSERT INTO `products` (`id`, `code`, `product_code`, `product_name`, `current_category`, `cost_price`, `selling_price`, `supplier`, `other_fields_json`) VALUES
+(1, 'TT001', 'P001', 'Luxury Baby Pillow', 'Toys & Games', 10.00, 15.99, 'Baby Sleep Corp', '{"color": "blue", "material": "cotton"}'),
+(2, 'TT002', 'P002', 'Wooden Building Blocks Set', 'Toys & Games', 18.00, 24.50, 'ToyLand Ltd', '{"pieces": 50}'),
+(3, 'TT003', 'P003', 'Organic Cotton Romper', 'Baby Clothing', 8.00, 12.99, 'TinyTreads', '{"size": "6M"}'),
+(4, 'TT004', 'P004', 'Baby Towel Set', 'Baby Bedding Sets & Pillows', 12.00, 18.00, 'SoftTouch', '{"pack": 3}'),
+(5, 'TT005', 'P005', 'Anti-Colic Feeding Bottle', 'Bath & Skin Care', 6.00, 9.50, 'NurturePro', '{"capacity": "250ml"}')
 ON DUPLICATE KEY UPDATE `product_code` = VALUES(`product_code`);
+

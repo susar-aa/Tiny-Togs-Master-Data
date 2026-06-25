@@ -11,7 +11,7 @@ if (isset($_GET['action'])) {
         $category_name = $_GET['category'] ?? '';
         
         $db = \Config\Database::getConnection();
-        $stmt = $db->prepare("SELECT product_code, product_name, price, supplier FROM products WHERE current_category = :cat ORDER BY product_name ASC");
+        $stmt = $db->prepare("SELECT product_code, product_name, selling_price, supplier FROM products WHERE current_category = :cat ORDER BY product_name ASC");
         $stmt->execute([':cat' => $category_name]);
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
@@ -1087,7 +1087,7 @@ $(document).ready(function() {
                             html += '<tr>' +
                                     '  <td><code>' + p.product_code + '</code></td>' +
                                     '  <td style="font-weight:600;">' + p.product_name + '</td>' +
-                                    '  <td style="color: var(--ios-green); font-weight:600;">Rs. ' + parseFloat(p.price).toFixed(2) + '</td>' +
+                                    '  <td style="color: var(--ios-green); font-weight:600;">Rs. ' + parseFloat(p.selling_price).toFixed(2) + '</td>' +
                                     '  <td class="small text-muted">' + (p.supplier ? p.supplier : 'Not set') + '</td>' +
                                     '</tr>';
                         });

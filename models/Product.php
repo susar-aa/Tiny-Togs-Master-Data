@@ -29,7 +29,7 @@ class Product {
      * @return array
      */
     public function getBatch($offset, $limit) {
-        $sql = "SELECT id, product_code, product_name, current_category, price, supplier, other_fields_json 
+        $sql = "SELECT id, code, product_code, product_name, current_category, cost_price, selling_price, supplier, other_fields_json 
                 FROM products 
                 ORDER BY id ASC 
                 LIMIT :limit OFFSET :offset";
@@ -54,16 +54,18 @@ class Product {
         $insert_parts = [];
         $bindings = [];
         
-        $sql = "INSERT INTO products (product_code, product_name, current_category, price, supplier, other_fields_json) VALUES ";
+        $sql = "INSERT INTO products (code, product_code, product_name, current_category, cost_price, selling_price, supplier, other_fields_json) VALUES ";
         
         $index = 0;
         foreach ($products as $p) {
-            $insert_parts[] = "(?, ?, ?, ?, ?, ?)";
+            $insert_parts[] = "(?, ?, ?, ?, ?, ?, ?, ?)";
             
+            $bindings[] = $p['code'] ?? null;
             $bindings[] = $p['product_code'];
             $bindings[] = $p['product_name'];
             $bindings[] = $p['current_category'];
-            $bindings[] = (float)$p['price'];
+            $bindings[] = (float)($p['cost_price'] ?? 0);
+            $bindings[] = (float)($p['selling_price'] ?? 0);
             $bindings[] = $p['supplier'] ?? null;
             $bindings[] = isset($p['other_fields_json']) ? json_encode($p['other_fields_json']) : null;
             $index++;
@@ -71,9 +73,11 @@ class Product {
 
         $sql .= implode(', ', $insert_parts);
         $sql .= " ON DUPLICATE KEY UPDATE 
+                    code = VALUES(code),
                     product_name = VALUES(product_name), 
                     current_category = VALUES(current_category), 
-                    price = VALUES(price), 
+                    cost_price = VALUES(cost_price),
+                    selling_price = VALUES(selling_price), 
                     supplier = VALUES(supplier), 
                     other_fields_json = VALUES(other_fields_json)";
 
@@ -135,7 +139,7 @@ class Product {
      * Retrieve products for DataTable server-side processing
      */
     public function getFilteredProducts($search, $start, $length, $order_column, $order_dir, $category_filter, $product_name_filter = '', $supplier_filter = '') {
-        $sql = "SELECT id, product_code, product_name, current_category, price, supplier, other_fields_json 
+        $sql = "SELECT id, code, product_code, product_name, current_category, cost_price, selling_price, supplier, other_fields_json 
                 FROM products WHERE 1=1";
         $params = [];
 
@@ -165,7 +169,7 @@ class Product {
             1 => 'product_name',
             2 => 'current_category',
             3 => 'supplier',
-            4 => 'price'
+            4 => 'selling_price'
         ];
         
         $order_by = 'id';

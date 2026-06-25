@@ -75,11 +75,13 @@ include __DIR__ . '/views/layout/header.php';
                             <h6 class="font-weight-600 mb-2">Supported Headers:</h6>
                             <p class="text-muted small mb-2">The system will dynamically look for and map columns with these terms:</p>
                             <ul class="text-muted small ps-3">
-                                <li><strong>Product Code / SKU</strong> (required)</li>
+                                <li><strong>Code</strong> (optional - separate product code)</li>
+                                <li><strong>SKU</strong> (required - unique product identifier)</li>
                                 <li><strong>Product Name / Title</strong> (required)</li>
-                                <li><strong>Current Category / Category</strong></li>
-                                <li><strong>Price / Cost</strong></li>
-                                <li><strong>Supplier / Vendor</strong></li>
+                                <li><strong>Product Category / Category</strong></li>
+                                <li><strong>Cost Price</strong></li>
+                                <li><strong>Selling Price / Price</strong></li>
+                                <li><strong>Supplier Name / Vendor</strong></li>
                                 <li><em>All other custom columns will be saved under additional attributes JSON.</em></li>
                             </ul>
                         </div>

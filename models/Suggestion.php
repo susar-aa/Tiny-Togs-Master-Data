@@ -226,7 +226,7 @@ class Suggestion {
      * Get single suggestion detail by ID
      */
     public function getById($id) {
-        $sql = "SELECT s.id, s.product_id, p.product_code, p.product_name, p.price, p.supplier,
+        $sql = "SELECT s.id, s.product_id, p.product_code, p.product_name, p.selling_price, p.supplier,
                        s.current_category, s.suggested_category, s.matched_keyword, s.confidence_score, s.status
                 FROM category_suggestions s
                 JOIN products p ON s.product_id = p.id

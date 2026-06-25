@@ -85,7 +85,7 @@ class SuggestionController {
                 'product_id' => $detail['product_id'],
                 'product_code' => htmlspecialchars($detail['product_code']),
                 'product_name' => htmlspecialchars($detail['product_name']),
-                'price' => number_format($detail['price'], 2),
+                'price' => number_format($detail['selling_price'], 2),
                 'supplier' => htmlspecialchars($detail['supplier'] ?? 'N/A'),
                 'current_category' => htmlspecialchars($detail['current_category']),
                 'suggested_category' => htmlspecialchars($detail['suggested_category']),

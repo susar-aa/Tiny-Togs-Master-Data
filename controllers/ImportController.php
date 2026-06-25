@@ -193,9 +193,11 @@ class ImportController {
             
             // Map column indexes based on header text
             $code_col = null;
+            $sku_col = null;
             $name_col = null;
             $cat_col = null;
-            $price_col = null;
+            $cost_price_col = null;
+            $selling_price_col = null;
             $sup_col = null;
             $other_cols = [];
 
@@ -210,21 +212,23 @@ class ImportController {
                 elseif (strpos($lower, 'category') !== false) {
                     $cat_col = $col_letter;
                 }
-                // 3. Price (Prefer Selling Price if both cost and selling exist)
-                elseif (strpos($lower, 'selling price') !== false) {
-                    if ($price_col !== null) {
-                        $other_cols[$price_col] = $headers[$price_col];
-                    }
-                    $price_col = $col_letter;
+                // 3. Cost Price
+                elseif (strpos($lower, 'cost price') !== false || strpos($lower, 'cost') !== false) {
+                    $cost_price_col = $col_letter;
                 }
-                elseif (strpos($lower, 'price') !== false || strpos($lower, 'rate') !== false || strpos($lower, 'cost') !== false) {
-                    if ($price_col === null) {
-                        $price_col = $col_letter;
+                // 4. Selling Price
+                elseif (strpos($lower, 'selling price') !== false || strpos($lower, 'selling') !== false) {
+                    $selling_price_col = $col_letter;
+                }
+                // 5. Generic price fallback (maps to selling_price if selling_price not yet set)
+                elseif (strpos($lower, 'price') !== false || strpos($lower, 'rate') !== false) {
+                    if ($selling_price_col === null) {
+                        $selling_price_col = $col_letter;
                     } else {
                         $other_cols[$col_letter] = $header_name;
                     }
                 }
-                // 4. Product Name
+                // 6. Product Name
                 elseif (strpos($lower, 'product name') !== false) {
                     $name_col = $col_letter;
                 }
@@ -235,21 +239,22 @@ class ImportController {
                         $other_cols[$col_letter] = $header_name;
                     }
                 }
-                // 5. Product Code / SKU
+                // 7. SKU (product_code) - prefer 'sku' header
                 elseif (strpos($lower, 'sku') !== false) {
-                    if ($code_col !== null) {
-                        $other_cols[$code_col] = $headers[$code_col];
+                    if ($sku_col !== null) {
+                        $other_cols[$sku_col] = $headers[$sku_col];
                     }
-                    $code_col = $col_letter;
+                    $sku_col = $col_letter;
                 }
-                elseif (strpos($lower, 'code') !== false) {
+                // 8. Code - the new separate code field
+                elseif ($lower === 'code' || strpos($lower, 'product code') !== false) {
                     if ($code_col === null) {
                         $code_col = $col_letter;
                     } else {
                         $other_cols[$col_letter] = $header_name;
                     }
                 }
-                // 6. Other attributes
+                // 9. Other attributes
                 else {
                     if (!empty($header_name)) {
                         $other_cols[$col_letter] = $header_name;
@@ -257,12 +262,16 @@ class ImportController {
                 }
             }
 
+            // If no separate SKU col found, fall back to code_col for SKU
+            if ($sku_col === null && $code_col !== null) {
+                $sku_col = $code_col;
+                $code_col = null;
+            }
+
             // Fallbacks
-            if ($code_col === null) $code_col = 'A';
+            if ($sku_col === null) $sku_col = 'A';
             if ($name_col === null) $name_col = 'B';
             if ($cat_col === null) $cat_col = 'C';
-            if ($price_col === null) $price_col = 'D';
-            if ($sup_col === null) $sup_col = 'E';
 
             $products_batch = [];
             
@@ -273,12 +282,13 @@ class ImportController {
                     continue;
                 }
 
-                $code = trim($row[$code_col] ?? '');
+                $sku = trim($row[$sku_col] ?? '');
+                $code = $code_col ? trim($row[$code_col] ?? '') : null;
                 $name = trim($row[$name_col] ?? '');
                 $category = trim($row[$cat_col] ?? '');
                 
-                // If code and name are empty, skip
-                if (empty($code) && empty($name)) {
+                // If sku and name are empty, skip
+                if (empty($sku) && empty($name)) {
                     continue;
                 }
 
@@ -288,8 +298,9 @@ class ImportController {
                     $categoryModel->getOrCreate($category);
                 }
 
-                $price = $row[$price_col] ?? 0.0;
-                $supplier = trim($row[$sup_col] ?? '');
+                $cost_price = $cost_price_col ? ($row[$cost_price_col] ?? 0.0) : 0.0;
+                $selling_price = $selling_price_col ? ($row[$selling_price_col] ?? 0.0) : 0.0;
+                $supplier = $sup_col ? trim($row[$sup_col] ?? '') : '';
                 
                 // Extra fields
                 $extra_fields = [];
@@ -300,10 +311,12 @@ class ImportController {
                 }
 
                 $products_batch[] = [
-                    'product_code' => $code,
+                    'code' => empty($code) ? null : $code,
+                    'product_code' => $sku,
                     'product_name' => $name,
                     'current_category' => $category,
-                    'price' => $price,
+                    'cost_price' => $cost_price,
+                    'selling_price' => $selling_price,
                     'supplier' => empty($supplier) ? null : $supplier,
                     'other_fields_json' => empty($extra_fields) ? null : $extra_fields
                 ];

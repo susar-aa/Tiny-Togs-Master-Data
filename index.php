@@ -673,7 +673,7 @@ $(document).ready(function() {
                 }
             },
             { 
-                data: 'price',
+                data: 'selling_price',
                 orderable: true,
                 render: function(data, type, row) {
                     const price = parseFloat(data).toFixed(2);
@@ -717,7 +717,7 @@ $(document).ready(function() {
                     </div>
                     <div class="col-md-3 ios-detail-item">
                         <span class="detail-label">Price</span>
-                        <span class="detail-value price">Rs. ${parseFloat(d.price).toFixed(2)}</span>
+                        <span class="detail-value price">Rs. ${parseFloat(d.selling_price).toFixed(2)}</span>
                     </div>
                     <div class="col-md-3 ios-detail-item">
                         <span class="detail-label">Supplier</span>

@@ -772,7 +772,7 @@ $(document).ready(function() {
                             html += '<tr>' +
                                     '  <td><code>' + p.product_code + '</code></td>' +
                                     '  <td style="font-weight:600;">' + p.product_name + '</td>' +
-                                    '  <td style="color: var(--ios-green); font-weight:600;">Rs. ' + parseFloat(p.price).toFixed(2) + '</td>' +
+                                    '  <td style="color: var(--ios-green); font-weight:600;">Rs. ' + parseFloat(p.selling_price).toFixed(2) + '</td>' +
                                     '  <td class="small text-muted">' + (p.current_category ? p.current_category : 'Not set') + '</td>' +
                                     '</tr>';
                         });

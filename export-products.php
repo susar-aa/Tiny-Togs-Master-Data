@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 // Query all products and resolve main categories
 $db = Database::getConnection();
-$sql = "SELECT p.product_code, p.product_name, p.current_category, c.main_category, p.price, p.supplier, p.other_fields_json
+$sql = "SELECT p.code, p.product_code, p.product_name, p.current_category, c.main_category, p.cost_price, p.selling_price, p.supplier, p.other_fields_json
         FROM products p
         LEFT JOIN categories c ON p.current_category = c.category_name
         ORDER BY p.product_name ASC";
@@ -20,7 +20,7 @@ $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Products Catalog');
 
 // Set Header Row
-$headers = ['Product Code / SKU', 'Product Name', 'Category (Sub-category)', 'Main Category', 'Price', 'Supplier'];
+$headers = ['Code', 'SKU', 'Product Name', 'Product Category', 'Cost Price', 'Selling Price', 'Supplier Name'];
 
 // Gather all unique keys from other_fields_json across all rows to dynamically add them as headers!
 $dynamicKeys = [];
@@ -51,20 +51,24 @@ foreach ($fullHeaders as $header) {
 // Populate Data Row by Row
 $rowNum = 2;
 foreach ($products as $p) {
-    $sheet->setCellValue('A' . $rowNum, $p['product_code']);
-    $sheet->setCellValue('B' . $rowNum, $p['product_name']);
-    $sheet->setCellValue('C' . $rowNum, $p['current_category'] ?? 'Uncategorized');
-    $sheet->setCellValue('D' . $rowNum, $p['main_category'] ?? 'None');
+    $sheet->setCellValue('A' . $rowNum, $p['code'] ?? '');
+    $sheet->setCellValue('B' . $rowNum, $p['product_code']);
+    $sheet->setCellValue('C' . $rowNum, $p['product_name']);
+    $sheet->setCellValue('D' . $rowNum, $p['current_category'] ?? 'Uncategorized');
     
-    // Format price
-    $sheet->setCellValue('E' . $rowNum, (float)$p['price']);
+    // Format cost price
+    $sheet->setCellValue('E' . $rowNum, (float)$p['cost_price']);
     $sheet->getStyle('E' . $rowNum)->getNumberFormat()->setFormatCode('"Rs. "#,##0.00');
     
-    $sheet->setCellValue('F' . $rowNum, $p['supplier'] ?? '');
+    // Format selling price
+    $sheet->setCellValue('F' . $rowNum, (float)$p['selling_price']);
+    $sheet->getStyle('F' . $rowNum)->getNumberFormat()->setFormatCode('"Rs. "#,##0.00');
+    
+    $sheet->setCellValue('G' . $rowNum, $p['supplier'] ?? '');
     
     // Fill dynamic fields
     $extra = !empty($p['other_fields_json']) ? json_decode($p['other_fields_json'], true) : [];
-    $col = 'G';
+    $col = 'H';
     foreach ($dynamicKeys as $key) {
         $val = $extra[$key] ?? '';
         $sheet->setCellValue($col . $rowNum, $val);
