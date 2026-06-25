@@ -45,6 +45,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="master-data.php" class="nav-link <?= ($current_page == 'master-data.php') ? 'active' : '' ?>">
+                        <i class="fa-solid fa-table-cells"></i>
+                        <span>MASTER DATA</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="import-categories.php" class="nav-link <?= ($current_page == 'import-categories.php') ? 'active' : '' ?>">
                         <i class="fa-solid fa-folder-tree"></i>
                         <span>CATEGORIES</span>
