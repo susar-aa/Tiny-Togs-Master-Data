@@ -9,20 +9,6 @@ class Product {
 
     public function __construct() {
         $this->db = Database::getConnection();
-        $this->ensureSellingPriceColumn();
-    }
-
-    /**
-     * Ensure selling_price column exists in products table
-     */
-    private function ensureSellingPriceColumn() {
-        try {
-            $this->db->exec("ALTER TABLE products ADD COLUMN selling_price DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER `price`");
-            // Initialize selling_price = price for existing records
-            $this->db->exec("UPDATE products SET selling_price = price WHERE selling_price = 0 AND price > 0");
-        } catch (\PDOException $e) {
-            // Column already exists, ignore
-        }
     }
 
     /**
@@ -149,7 +135,7 @@ class Product {
      * Retrieve products for DataTable server-side processing
      */
     public function getFilteredProducts($search, $start, $length, $order_column, $order_dir, $category_filter, $product_name_filter = '', $supplier_filter = '') {
-        $sql = "SELECT id, product_code, product_name, current_category, price, selling_price, supplier, other_fields_json 
+        $sql = "SELECT id, product_code, product_name, current_category, price, supplier, other_fields_json 
                 FROM products WHERE 1=1";
         $params = [];
 
@@ -174,15 +160,12 @@ class Product {
         }
 
         // Map column index to SQL columns for ordering
-        // Column index: 0=checkbox, 1=code, 2=sku, 3=product_name, 4=category, 5=cost_price, 6=selling_price, 7=supplier
+        // Column 0 is the checkbox, so starts ordering at index 1
         $columns = [
-            1 => 'product_code',
-            2 => 'product_code',
-            3 => 'product_name',
-            4 => 'current_category',
-            5 => 'price',
-            6 => 'selling_price',
-            7 => 'supplier'
+            1 => 'product_name',
+            2 => 'current_category',
+            3 => 'supplier',
+            4 => 'price'
         ];
         
         $order_by = 'id';

@@ -590,13 +590,10 @@ include __DIR__ . '/views/layout/header.php';
                             <th class="no-sort text-center" style="width: 40px;">
                                 <input type="checkbox" id="selectAllCheckbox" class="ios-checkbox">
                             </th>
-                            <th style="width: 100px;">Code</th>
-                            <th style="width: 100px;">SKU</th>
                             <th>Product Name</th>
-                            <th style="width: 250px;">Product Category</th>
-                            <th style="width: 100px;">Cost Price</th>
-                            <th style="width: 110px;">Selling Price</th>
-                            <th style="width: 180px;">Supplier Name</th>
+                            <th style="width: 300px;">Category</th>
+                            <th style="width: 200px;">Supplier</th>
+                            <th style="width: 140px;">Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -645,23 +642,8 @@ $(document).ready(function() {
                 }
             },
             { 
-                data: 'product_code',
-                orderable: true,
-                render: function(data, type, row) {
-                    return '<code>' + (data || 'N/A') + '</code>';
-                }
-            },
-            { 
-                data: 'product_code',
-                orderable: true,
-                render: function(data, type, row) {
-                    return '<code>' + (data || 'N/A') + '</code>';
-                }
-            },
-            { 
                 data: 'product_name',
                 className: 'dt-control-toggle',
-                orderable: true,
                 render: function(data, type, row) {
                     return '<div class="d-flex align-items-center gap-2 cursor-pointer">' +
                            '  <i class="fa-solid fa-chevron-right row-toggle-icon" style="font-size: 0.8rem;"></i>' +
@@ -684,28 +666,22 @@ $(document).ready(function() {
                 }
             },
             { 
-                data: 'price',
-                orderable: true,
-                render: function(data, type, row) {
-                    return '<span style="font-weight: 600; color: var(--ios-orange);">Rs. ' + parseFloat(data).toFixed(2) + '</span>';
-                }
-            },
-            { 
-                data: 'selling_price',
-                orderable: true,
-                render: function(data, type, row) {
-                    return '<span style="font-weight: 600; color: var(--ios-green);">Rs. ' + parseFloat(data).toFixed(2) + '</span>';
-                }
-            },
-            { 
                 data: 'supplier',
                 orderable: true,
                 render: function(data, type, row) {
-                    return data ? '<span style="color: var(--ios-secondary-label);">' + data + '</span>' : '<span class="text-muted" style="font-size:0.8rem;">Not set</span>';
+                    return data ? '<span class="text-muted small">' + data + '</span>' : '<span class="text-muted" style="font-size:0.8rem;">Not set</span>';
+                }
+            },
+            { 
+                data: 'price',
+                orderable: true,
+                render: function(data, type, row) {
+                    const price = parseFloat(data).toFixed(2);
+                    return '<span style="font-weight: 600; color: var(--ios-green);">Rs. ' + price + '</span>';
                 }
             }
         ],
-        order: [[3, 'asc']], // Default sort by product name (column index 3)
+        order: [[1, 'asc']], // Default sort by product name
         columnDefs: [
             { targets: 'no-sort', orderable: false }
         ],
@@ -735,17 +711,13 @@ $(document).ready(function() {
         return `
             <div class="ios-detail-card">
                 <div class="row g-3">
-                    <div class="col-md-2 ios-detail-item">
+                    <div class="col-md-3 ios-detail-item">
                         <span class="detail-label">Product Code / SKU</span>
                         <span class="detail-value">${d.product_code || 'N/A'}</span>
                     </div>
-                    <div class="col-md-2 ios-detail-item">
-                        <span class="detail-label">Cost Price</span>
+                    <div class="col-md-3 ios-detail-item">
+                        <span class="detail-label">Price</span>
                         <span class="detail-value price">Rs. ${parseFloat(d.price).toFixed(2)}</span>
-                    </div>
-                    <div class="col-md-2 ios-detail-item">
-                        <span class="detail-label">Selling Price</span>
-                        <span class="detail-value" style="color: var(--ios-green); font-weight: 600;">Rs. ${parseFloat(d.selling_price).toFixed(2)}</span>
                     </div>
                     <div class="col-md-3 ios-detail-item">
                         <span class="detail-label">Supplier</span>
