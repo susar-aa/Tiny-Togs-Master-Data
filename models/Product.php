@@ -50,13 +50,12 @@ class Product {
             return 0;
         }
 
-        // Build batch insert query with ON DUPLICATE KEY UPDATE
+        // Plain batch insert — no duplicate checking, just insert all rows
         $insert_parts = [];
         $bindings = [];
         
         $sql = "INSERT INTO products (code, product_code, product_name, current_category, cost_price, selling_price, supplier, other_fields_json) VALUES ";
         
-        $index = 0;
         foreach ($products as $p) {
             $insert_parts[] = "(?, ?, ?, ?, ?, ?, ?, ?)";
             
@@ -68,18 +67,9 @@ class Product {
             $bindings[] = (float)($p['selling_price'] ?? 0);
             $bindings[] = $p['supplier'] ?? null;
             $bindings[] = isset($p['other_fields_json']) ? json_encode($p['other_fields_json']) : null;
-            $index++;
         }
 
         $sql .= implode(', ', $insert_parts);
-        $sql .= " ON DUPLICATE KEY UPDATE 
-                    code = VALUES(code),
-                    product_name = VALUES(product_name), 
-                    current_category = VALUES(current_category), 
-                    cost_price = VALUES(cost_price),
-                    selling_price = VALUES(selling_price), 
-                    supplier = VALUES(supplier), 
-                    other_fields_json = VALUES(other_fields_json)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($bindings);

@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `category_keywords` (
 CREATE TABLE IF NOT EXISTS `products` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `code` VARCHAR(100) NULL,
-  `product_code` VARCHAR(100) NOT NULL,
+  `product_code` VARCHAR(100) NULL,
   `product_name` VARCHAR(255) NOT NULL,
   `current_category` VARCHAR(255) NOT NULL,
   `cost_price` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
