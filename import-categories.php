@@ -494,30 +494,24 @@ include __DIR__ . '/views/layout/header.php';
     /* ---------- iOS Checkboxes ---------- */
     .form-check-input,
     input[type="checkbox"].form-check-input {
-        width: 20px;
-        height: 20px;
-        border-radius: 6px;
-        border: 1.5px solid var(--ios-gray-3);
-        background-color: #fff;
-        cursor: pointer;
-        appearance: none;
-        -webkit-appearance: none;
-        position: relative;
-        transition: all 0.15s ease;
-        margin: 0;
-        vertical-align: middle;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 6px !important;
+        border: 1.5px solid var(--ios-gray-3) !important;
+        background-color: #fff !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+        margin: 0 !important;
+        vertical-align: middle !important;
+        background-image: none !important;
+        -webkit-print-color-adjust: unset !important;
+        print-color-adjust: unset !important;
     }
-    .form-check-input:checked { background-color: var(--ios-blue); border-color: var(--ios-blue); }
-    .form-check-input:checked::after {
-        content: "";
-        position: absolute;
-        left: 6px; top: 2px;
-        width: 5px; height: 10px;
-        border: solid #fff;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
+    .form-check-input:checked { 
+        background: var(--ios-blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 12 10 16 18 8'%3E%3C/polyline%3E%3C/svg%3E") center center / 14px 14px no-repeat !important; 
+        border-color: var(--ios-blue) !important; 
     }
-    .form-check-input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15); }
+    .form-check-input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15) !important; }
 
     /* ---------- Bulk Panel ---------- */
     .ios-bulk-panel {

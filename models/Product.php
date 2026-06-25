@@ -162,11 +162,10 @@ class Product {
         // Map column index to SQL columns for ordering
         // Column 0 is the checkbox, so starts ordering at index 1
         $columns = [
-            1 => 'product_code',
-            2 => 'product_name',
-            3 => 'current_category',
-            4 => 'price',
-            5 => 'supplier'
+            1 => 'product_name',
+            2 => 'current_category',
+            3 => 'supplier',
+            4 => 'price'
         ];
         
         $order_by = 'id';

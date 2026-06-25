@@ -592,6 +592,8 @@ include __DIR__ . '/views/layout/header.php';
                             </th>
                             <th>Product Name</th>
                             <th style="width: 300px;">Category</th>
+                            <th style="width: 200px;">Supplier</th>
+                            <th style="width: 140px;">Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -661,6 +663,21 @@ $(document).ready(function() {
                     });
                     selectHtml += '</select>';
                     return selectHtml;
+                }
+            },
+            { 
+                data: 'supplier',
+                orderable: true,
+                render: function(data, type, row) {
+                    return data ? '<span class="text-muted small">' + data + '</span>' : '<span class="text-muted" style="font-size:0.8rem;">Not set</span>';
+                }
+            },
+            { 
+                data: 'price',
+                orderable: true,
+                render: function(data, type, row) {
+                    const price = parseFloat(data).toFixed(2);
+                    return '<span style="font-weight: 600; color: var(--ios-green);">Rs. ' + price + '</span>';
                 }
             }
         ],

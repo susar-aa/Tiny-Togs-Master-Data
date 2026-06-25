@@ -56,6 +56,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <span>MAIN CATEGORIES</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="suppliers.php" class="nav-link <?= ($current_page == 'suppliers.php') ? 'active' : '' ?>">
+                        <i class="fa-solid fa-truck"></i>
+                        <span>SUPPLIERS</span>
+                    </a>
+                </li>
             </ul>
             <div class="sidebar-footer">
                 <span>Version 1.0.0</span>
