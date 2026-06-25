@@ -492,26 +492,23 @@ include __DIR__ . '/views/layout/header.php';
     }
 
     /* ---------- iOS Checkboxes ---------- */
-    .form-check-input,
-    input[type="checkbox"].form-check-input {
+    html input.form-check-input[type=checkbox] {
         width: 20px !important;
         height: 20px !important;
         border-radius: 6px !important;
         border: 1.5px solid var(--ios-gray-3) !important;
-        background-color: #fff !important;
+        background: #fff none !important;
         cursor: pointer !important;
-        transition: all 0.15s ease !important;
         margin: 0 !important;
         vertical-align: middle !important;
-        background-image: none !important;
         -webkit-print-color-adjust: unset !important;
         print-color-adjust: unset !important;
     }
-    .form-check-input:checked { 
-        background: var(--ios-blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 12 10 16 18 8'%3E%3C/polyline%3E%3C/svg%3E") center center / 14px 14px no-repeat !important; 
+    html input.form-check-input[type=checkbox]:checked { 
+        background: var(--ios-blue) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e") center / 14px no-repeat !important;
         border-color: var(--ios-blue) !important; 
     }
-    .form-check-input:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15) !important; }
+    html input.form-check-input[type=checkbox]:focus { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15) !important; }
 
     /* ---------- Bulk Panel ---------- */
     .ios-bulk-panel {
