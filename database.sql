@@ -24,13 +24,14 @@ CREATE TABLE IF NOT EXISTS `category_keywords` (
   INDEX `idx_category_id` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table: products
+-- Table: products (UPDATED with selling_price column)
 CREATE TABLE IF NOT EXISTS `products` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `product_code` VARCHAR(100) NOT NULL,
   `product_name` VARCHAR(255) NOT NULL,
   `current_category` VARCHAR(255) NOT NULL,
   `price` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+  `selling_price` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
   `supplier` VARCHAR(255) NULL,
   `other_fields_json` JSON NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -95,11 +96,18 @@ INSERT INTO `category_keywords` (`category_id`, `keyword`) VALUES
 (5, 'shampoo'), (5, 'soap'), (5, 'lotion'), (5, 'towel'), (5, 'tub'), (5, 'bath wash')
 ON DUPLICATE KEY UPDATE `keyword` = VALUES(`keyword`);
 
--- Insert Sample Products
-INSERT INTO `products` (`id`, `product_code`, `product_name`, `current_category`, `price`, `supplier`, `other_fields_json`) VALUES
-(1, 'P001', 'Luxury Baby Pillow', 'Toys & Games', 15.99, 'Baby Sleep Corp', '{"color": "blue", "material": "cotton"}'),
-(2, 'P002', 'Wooden Building Blocks Set', 'Toys & Games', 24.50, 'ToyLand Ltd', '{"pieces": 50}'),
-(3, 'P003', 'Organic Cotton Romper', 'Baby Clothing', 12.99, 'TinyTreads', '{"size": "6M"}'),
-(4, 'P004', 'Baby Towel Set', 'Baby Bedding Sets & Pillows', 18.00, 'SoftTouch', '{"pack": 3}'),
-(5, 'P005', 'Anti-Colic Feeding Bottle', 'Bath & Skin Care', 9.50, 'NurturePro', '{"capacity": "250ml"}')
+-- Insert Sample Products (UPDATED with selling_price)
+INSERT INTO `products` (`id`, `product_code`, `product_name`, `current_category`, `price`, `selling_price`, `supplier`, `other_fields_json`) VALUES
+(1, 'P001', 'Luxury Baby Pillow', 'Toys & Games', 15.99, 22.99, 'Baby Sleep Corp', '{"color": "blue", "material": "cotton"}'),
+(2, 'P002', 'Wooden Building Blocks Set', 'Toys & Games', 24.50, 35.00, 'ToyLand Ltd', '{"pieces": 50}'),
+(3, 'P003', 'Organic Cotton Romper', 'Baby Clothing', 12.99, 18.50, 'TinyTreads', '{"size": "6M"}'),
+(4, 'P004', 'Baby Towel Set', 'Baby Bedding Sets & Pillows', 18.00, 25.00, 'SoftTouch', '{"pack": 3}'),
+(5, 'P005', 'Anti-Colic Feeding Bottle', 'Bath & Skin Care', 9.50, 14.99, 'NurturePro', '{"capacity": "250ml"}')
 ON DUPLICATE KEY UPDATE `product_code` = VALUES(`product_code`);
+
+-- ========================================================================
+-- UPGRADE SCRIPT: Add selling_price column to existing products table
+-- ========================================================================
+-- Run this ALTER statement if your products table already exists without selling_price:
+-- ALTER TABLE products ADD COLUMN selling_price DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER `price`;
+-- UPDATE products SET selling_price = price WHERE selling_price = 0 AND price > 0;

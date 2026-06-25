@@ -18,16 +18,14 @@ class MainCategory {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 main_category_name VARCHAR(255) NOT NULL UNIQUE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
         
-        // Seed from existing categories if empty
-        $stmt = $this->db->query("SELECT COUNT(*) FROM main_categories");
-        if ($stmt->fetchColumn() == 0) {
-            $this->db->exec("
-                INSERT IGNORE INTO main_categories (main_category_name)
-                SELECT DISTINCT main_category FROM categories WHERE main_category IS NOT NULL AND main_category != '';
-            ");
+        // Fix collation on existing table if needed
+        try {
+            $this->db->exec("ALTER TABLE main_categories CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        } catch (\PDOException $e) {
+            // Ignore if alter fails
         }
     }
 
@@ -38,7 +36,7 @@ class MainCategory {
     public function getAll() {
         // Fetch main categories and also count how many sub-categories belong to each
         $sql = "SELECT m.id, m.main_category_name AS name, m.created_at,
-                       (SELECT COUNT(*) FROM categories c WHERE c.main_category = m.main_category_name) AS sub_category_count
+                       (SELECT COUNT(*) FROM categories c WHERE c.main_category COLLATE utf8mb4_unicode_ci = m.main_category_name) AS sub_category_count
                 FROM main_categories m
                 ORDER BY m.main_category_name ASC";
         $stmt = $this->db->query($sql);
