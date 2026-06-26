@@ -360,6 +360,13 @@ include __DIR__ . '/views/layout/header.php';
     .category-select.border-warning { border-color: var(--ios-orange) !important; box-shadow: 0 0 0 3px rgba(255,149,0,0.12); }
     .category-select.border-success { border-color: var(--ios-green) !important; box-shadow: 0 0 0 3px rgba(52,199,89,0.12); }
     .category-select.border-danger  { border-color: var(--ios-red) !important;  box-shadow: 0 0 0 3px rgba(255,59,48,0.12); }
+    .category-select.is-auto-created,
+    .ios-select.is-auto-created {
+        background-color: #ffe5e5 !important;
+        border-color: #ff3b30 !important;
+        color: #d63031 !important;
+        font-weight: 600;
+    }
 
     /* ---------- iOS Checkboxes ---------- */
     .ios-checkbox {
@@ -542,7 +549,15 @@ include __DIR__ . '/views/layout/header.php';
                     <select id="filterCategory" class="ios-select">
                         <option value="">All Categories</option>
                         <?php foreach ($categories as $cat): ?>
-                            <option value="<?= htmlspecialchars($cat['category_name']) ?>"><?= htmlspecialchars($cat['category_name']) ?></option>
+                            <?php if (isset($cat['is_auto_created']) && (int)$cat['is_auto_created'] === 1): ?>
+                                <option value="<?= htmlspecialchars($cat['category_name']) ?>" style="background-color: #ffe5e5; color: #d63031; font-weight: 600;">
+                                    <?= htmlspecialchars($cat['category_name']) ?> (Auto-Created)
+                                </option>
+                            <?php else: ?>
+                                <option value="<?= htmlspecialchars($cat['category_name']) ?>">
+                                    <?= htmlspecialchars($cat['category_name']) ?>
+                                </option>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -571,7 +586,15 @@ include __DIR__ . '/views/layout/header.php';
             <select id="bulkCategorySelect" class="ios-select">
                 <option value="">Uncategorized</option>
                 <?php foreach ($categories as $cat): ?>
-                    <option value="<?= htmlspecialchars($cat['category_name']) ?>"><?= htmlspecialchars($cat['category_name']) ?></option>
+                    <?php if (isset($cat['is_auto_created']) && (int)$cat['is_auto_created'] === 1): ?>
+                        <option value="<?= htmlspecialchars($cat['category_name']) ?>" style="background-color: #ffe5e5; color: #d63031; font-weight: 600;">
+                            <?= htmlspecialchars($cat['category_name']) ?> (Auto-Created)
+                        </option>
+                    <?php else: ?>
+                        <option value="<?= htmlspecialchars($cat['category_name']) ?>">
+                            <?= htmlspecialchars($cat['category_name']) ?>
+                        </option>
+                    <?php endif; ?>
                 <?php endforeach; ?>
             </select>
             <button class="ios-btn ios-btn-primary" id="bulkApplyBtn">
@@ -655,11 +678,25 @@ $(document).ready(function() {
                 data: 'current_category',
                 orderable: true,
                 render: function(data, type, row) {
-                    let selectHtml = '<select class="category-select" data-id="' + row.id + '">';
+                    let isCurrentAutoCreated = false;
+                    categoriesList.forEach(function(cat) {
+                        if (cat.category_name === data && parseInt(cat.is_auto_created) === 1) {
+                            isCurrentAutoCreated = true;
+                        }
+                    });
+                    
+                    const autoClass = isCurrentAutoCreated ? ' is-auto-created' : '';
+                    let selectHtml = '<select class="category-select' + autoClass + '" data-id="' + row.id + '">';
                     selectHtml += '<option value="">Uncategorized</option>';
                     categoriesList.forEach(function(cat) {
                         const selected = (cat.category_name === data) ? 'selected' : '';
-                        selectHtml += '<option value="' + cat.category_name + '" ' + selected + '>' + cat.category_name + '</option>';
+                        let styleAttr = '';
+                        let displayName = cat.category_name;
+                        if (parseInt(cat.is_auto_created) === 1) {
+                            styleAttr = ' style="background-color: #ffe5e5; color: #d63031; font-weight: 600;"';
+                            displayName += ' (Auto-Created)';
+                        }
+                        selectHtml += '<option value="' + cat.category_name + '"' + styleAttr + ' ' + selected + '>' + displayName + '</option>';
                     });
                     selectHtml += '</select>';
                     return selectHtml;
@@ -764,12 +801,35 @@ $(document).ready(function() {
         }, 250);
     });
 
+    // Helper to update dropdown highlight if auto-created category is selected
+    function updateSelectHighlight(selectEl) {
+        const val = selectEl.val();
+        const selectedCat = categoriesList.find(function(c) {
+            return c.category_name === val;
+        });
+        if (selectedCat && parseInt(selectedCat.is_auto_created) === 1) {
+            selectEl.addClass('is-auto-created');
+        } else {
+            selectEl.removeClass('is-auto-created');
+        }
+    }
+
     // Redraw table when dropdown filters change
     $('#filterCategory, #filterSupplier').on('change', function() {
         selectedIds = [];
         $('#selectAllCheckbox').prop('checked', false);
         $('#bulkActionsPanel').addClass('d-none');
+        updateSelectHighlight($('#filterCategory'));
         table.ajax.reload();
+    });
+
+    // Run initial highlights
+    updateSelectHighlight($('#filterCategory'));
+    updateSelectHighlight($('#bulkCategorySelect'));
+
+    // Highlight change on bulk Category Select
+    $('#bulkCategorySelect').on('change', function() {
+        updateSelectHighlight($(this));
     });
 
     // Handle Inline Dropdown Category Changes
@@ -778,6 +838,7 @@ $(document).ready(function() {
         const categoryName = $(this).val();
         const selectEl = $(this);
         
+        updateSelectHighlight(selectEl);
         selectEl.removeClass('border-success border-danger').addClass('border-warning');
         
         $.ajax({
