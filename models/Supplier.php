@@ -202,4 +202,27 @@ class Supplier {
         $stmt->execute([':name' => $name, ':exclude_id' => (int)$exclude_id]);
         return $stmt->fetchColumn() > 0;
     }
+
+    /**
+     * Get or create supplier by name
+     * @param string $name
+     * @return int|bool Supplier ID or true/false
+     */
+    public function getOrCreate($name) {
+        $name = trim($name);
+        if (empty($name)) {
+            return false;
+        }
+
+        $sql = "SELECT id FROM suppliers WHERE supplier_name = :name";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':name' => $name]);
+        $id = $stmt->fetchColumn();
+
+        if ($id) {
+            return $id;
+        }
+
+        return $this->save($name);
+    }
 }

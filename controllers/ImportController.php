@@ -305,6 +305,12 @@ class ImportController {
                 $cost_price = $cost_price_col ? ($row[$cost_price_col] ?? 0.0) : 0.0;
                 $selling_price = $selling_price_col ? ($row[$selling_price_col] ?? 0.0) : 0.0;
                 $supplier = $sup_col ? trim($row[$sup_col] ?? '') : '';
+
+                // Auto-create supplier if missing
+                if (!empty($supplier)) {
+                    $supplierModel = new \Models\Supplier();
+                    $supplierModel->getOrCreate($supplier);
+                }
                 
                 // Extra fields
                 $extra_fields = [];
