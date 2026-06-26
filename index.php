@@ -367,6 +367,12 @@ include __DIR__ . '/views/layout/header.php';
         color: #d63031 !important;
         font-weight: 600;
     }
+    .category-select.is-auto-created option,
+    .ios-select.is-auto-created option {
+        background-color: #ffffff;
+        color: #1c1c1e;
+        font-weight: normal;
+    }
 
     /* ---------- iOS Checkboxes ---------- */
     .ios-checkbox {
