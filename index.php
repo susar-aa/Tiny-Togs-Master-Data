@@ -967,6 +967,8 @@ $(document).ready(function() {
                 }
             });
         }
+    });
+
     // Initialize Pusher Client
     const pusher = new Pusher('60bf38943e8f9a1f5845', {
         cluster: 'ap2',
