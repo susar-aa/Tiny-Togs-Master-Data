@@ -374,6 +374,15 @@ include __DIR__ . '/views/layout/header.php';
         font-weight: normal;
     }
 
+    /* Real-time Row Flash Animation */
+    @keyframes row-flash {
+        0% { background-color: rgba(0, 122, 255, 0.25); }
+        100% { background-color: transparent; }
+    }
+    .row-flash-active {
+        animation: row-flash 2.5s ease-out;
+    }
+
     /* ---------- iOS Checkboxes ---------- */
     .ios-checkbox {
         width: 20px;
@@ -730,6 +739,10 @@ $(document).ready(function() {
         ],
         drawCallback: function() {
             updateSelectAllCheckboxState();
+        },
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', 'product-row-' + data.id);
+            $(row).attr('data-id', data.id);
         }
     });
 
@@ -954,8 +967,33 @@ $(document).ready(function() {
                 }
             });
         }
+    // Initialize Pusher Client
+    const pusher = new Pusher('60bf38943e8f9a1f5845', {
+        cluster: 'ap2',
+        forceTLS: true
     });
 
+    const channel = pusher.subscribe('master-data-channel');
+    channel.bind('category-updated', function(data) {
+        const updatedIds = data.product_ids ? data.product_ids.map(Number) : [Number(data.product_id)];
+        const categoryName = data.category_name;
+
+        updatedIds.forEach(function(prodId) {
+            const rowEl = $('#product-row-' + prodId);
+            if (rowEl.length > 0) {
+                const selectEl = rowEl.find('.category-select');
+                if (selectEl.length > 0) {
+                    selectEl.val(categoryName);
+                    updateSelectHighlight(selectEl);
+                }
+                
+                // Trigger row flash visual animation
+                rowEl.removeClass('row-flash-active');
+                void rowEl[0].offsetWidth; // trigger reflow
+                rowEl.addClass('row-flash-active');
+            }
+        });
+    });
 
 });
 </script>

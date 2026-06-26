@@ -13,6 +13,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Pusher JS -->
+    <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
+
     <!-- Global App Scripts -->
     <script>
         $(document).ready(function () {

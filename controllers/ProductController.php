@@ -52,6 +52,26 @@ class ProductController {
             $logModel = new Log();
             $logModel->record('Product Catalog Change', "Updated category of Product ID {$product_id} to '{$category}'.");
             
+            // Broadcast the change in real-time
+            try {
+                $options = [
+                    'cluster' => 'ap2',
+                    'useTLS' => true
+                ];
+                $pusher = new \Pusher\Pusher(
+                    '60bf38943e8f9a1f5845',
+                    '9c11ff6c9a4b69e5d8d9',
+                    '2170915',
+                    $options
+                );
+                $pusher->trigger('master-data-channel', 'category-updated', [
+                    'product_id' => $product_id,
+                    'category_name' => $category
+                ]);
+            } catch (\Exception $e) {
+                // Ignore Pusher connection errors so updates are not blocked
+            }
+            
             echo json_encode(['status' => 'success', 'message' => 'Category updated successfully.']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Failed to update category.']);
@@ -77,6 +97,26 @@ class ProductController {
             $count = count($ids);
             $logModel = new Log();
             $logModel->record('Product Catalog Bulk Change', "Updated categories of {$count} products to '{$category}' in bulk.");
+            
+            // Broadcast the bulk change in real-time
+            try {
+                $options = [
+                    'cluster' => 'ap2',
+                    'useTLS' => true
+                ];
+                $pusher = new \Pusher\Pusher(
+                    '60bf38943e8f9a1f5845',
+                    '9c11ff6c9a4b69e5d8d9',
+                    '2170915',
+                    $options
+                );
+                $pusher->trigger('master-data-channel', 'category-updated', [
+                    'product_ids' => $ids,
+                    'category_name' => $category
+                ]);
+            } catch (\Exception $e) {
+                // Ignore Pusher connection errors so updates are not blocked
+            }
             
             echo json_encode(['status' => 'success', 'message' => "Successfully updated category of {$count} products."]);
         } else {
