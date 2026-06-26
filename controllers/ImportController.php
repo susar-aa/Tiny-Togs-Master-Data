@@ -189,7 +189,11 @@ class ImportController {
             }
 
             // Row 1 is header
-            $headers = array_map('trim', array_shift($rows));
+            $headers = [];
+            if (isset($rows[1])) {
+                $headers = array_map('trim', $rows[1]);
+                unset($rows[1]);
+            }
             
             // Map column indexes based on header text
             $code_col = null;
